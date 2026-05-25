@@ -1,0 +1,10 @@
+[build]
+command = "npm run build"
+
+[functions]
+included_files = ["prisma/dev.db", "node_modules/.prisma/client/**", "node_modules/@prisma/client/**"]
+
+[context.production.environment]
+DATABASE_URL = "file:./dev.db"
+READ_ONLY_DEMO = "true"
+NEXT_PUBLIC_READ_ONLY_DEMO = "true"

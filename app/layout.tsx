@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { AccessibilityProvider } from "@/components/providers/accessibility-provider";
 import { SiteHeader } from "@/components/layout/site-header";
 import { getAccessibilityState, getCurrentUser } from "@/lib/auth";
+import { isReadOnlyDemo } from "@/lib/runtime";
 import "@/styles/globals.css";
 
 export const metadata: Metadata = {
@@ -37,6 +38,12 @@ export default async function RootLayout({
           initialSettings={accessibilitySettings}
           userId={sessionUser?.id ?? null}
         >
+          {isReadOnlyDemo ? (
+            <div className="screen-only border-b border-amber-200 bg-amber-50 px-4 py-3 text-center text-sm text-amber-900">
+              Live demo rejimi faol: yangi yozuvlar saqlanmaydi, tayyor demo ma’lumotlar bilan
+              ko‘rish mumkin.
+            </div>
+          ) : null}
           <div className="decorative-only pointer-events-none fixed inset-x-0 top-0 -z-10 h-[380px] rounded-b-[40px] bg-[linear-gradient(135deg,rgba(14,143,131,0.18),transparent_45%,rgba(196,129,26,0.14))]" />
           <SiteHeader currentUser={sessionUser} />
           <main className="mx-auto w-full max-w-7xl px-4 py-8 lg:px-6">{children}</main>

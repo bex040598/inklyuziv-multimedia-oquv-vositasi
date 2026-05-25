@@ -2,8 +2,13 @@ import { NextResponse } from "next/server";
 
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { isReadOnlyDemo } from "@/lib/runtime";
 
 export async function POST(request: Request) {
+  if (isReadOnlyDemo) {
+    return NextResponse.json({ ok: true });
+  }
+
   const user = await getCurrentUser();
 
   if (!user) {

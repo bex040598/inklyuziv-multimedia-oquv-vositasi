@@ -8,6 +8,7 @@ import { clearSession, requireUser, setSession } from "@/lib/auth";
 import { defaultAccessibilitySettings } from "@/lib/constants";
 import { prisma } from "@/lib/db";
 import { hashPassword, verifyPassword } from "@/lib/password";
+import { isReadOnlyDemo, readOnlyDemoMessage } from "@/lib/runtime";
 import {
   validateCourse,
   validateLesson,
@@ -71,6 +72,10 @@ export async function loginAction(_previousState: ActionState, formData: FormDat
 }
 
 export async function registerAction(_previousState: ActionState, formData: FormData) {
+  if (isReadOnlyDemo) {
+    return errorState(readOnlyDemoMessage);
+  }
+
   const { errors, values } = validateRegister(formData);
 
   if (Object.keys(errors).length > 0) {
@@ -138,6 +143,10 @@ export async function createCourseAction(
   formData: FormData
 ) {
   void previousState;
+  if (isReadOnlyDemo) {
+    return errorState(readOnlyDemoMessage);
+  }
+
   const user = await requireUser([Role.ADMIN, Role.TEACHER]);
   const { errors, values } = validateCourse(formData);
 
@@ -163,6 +172,10 @@ export async function createLessonAction(
   formData: FormData
 ) {
   void previousState;
+  if (isReadOnlyDemo) {
+    return errorState(readOnlyDemoMessage);
+  }
+
   await requireUser([Role.ADMIN, Role.TEACHER]);
   const { errors, values } = validateLesson(formData);
 
@@ -203,6 +216,10 @@ export async function createQuizAction(
   formData: FormData
 ) {
   void previousState;
+  if (isReadOnlyDemo) {
+    return errorState(readOnlyDemoMessage);
+  }
+
   await requireUser([Role.ADMIN, Role.TEACHER]);
   const { errors, values } = validateQuiz(formData);
 
@@ -265,6 +282,15 @@ export async function submitQuizAction(
   formData: FormData
 ) {
   void previousState;
+  if (isReadOnlyDemo) {
+    return successState(readOnlyDemoMessage, {
+      score: 0,
+      correctCount: 0,
+      totalQuestions: 0,
+      incorrectRecommendations: []
+    });
+  }
+
   const user = await requireUser([Role.STUDENT]);
   const quizId = String(formData.get("quizId") || "");
 
@@ -349,6 +375,10 @@ export async function submitQuizAction(
 }
 
 export async function markLessonCompleteAction(formData: FormData) {
+  if (isReadOnlyDemo) {
+    return;
+  }
+
   const user = await requireUser([Role.STUDENT]);
   const lessonId = String(formData.get("lessonId") || "");
 
@@ -384,6 +414,10 @@ export async function updateProgressNoteAction(
   formData: FormData
 ) {
   void previousState;
+  if (isReadOnlyDemo) {
+    return errorState(readOnlyDemoMessage);
+  }
+
   await requireUser([Role.ADMIN, Role.TEACHER]);
   const progressId = String(formData.get("progressId") || "");
   const teacherComment = String(formData.get("teacherComment") || "").trim();
@@ -409,6 +443,10 @@ export async function updateProgressNoteAction(
 }
 
 export async function updateUserRoleAction(formData: FormData) {
+  if (isReadOnlyDemo) {
+    return;
+  }
+
   await requireUser([Role.ADMIN]);
   const userId = String(formData.get("userId") || "");
   const role = String(formData.get("role") || "");
