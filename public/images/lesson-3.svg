@@ -1,0 +1,12 @@
+<svg width="1200" height="720" viewBox="0 0 1200 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="720" rx="36" fill="#F5F1E8"/>
+  <rect x="84" y="96" width="1032" height="528" rx="32" fill="#FFFDF7" stroke="#D6E4DF" stroke-width="4"/>
+  <rect x="128" y="156" width="420" height="408" rx="32" fill="#18343F"/>
+  <rect x="620" y="156" width="420" height="96" rx="28" fill="#0E8F83"/>
+  <rect x="620" y="292" width="420" height="96" rx="28" fill="#F1F4F4" stroke="#0E8F83" stroke-width="6"/>
+  <rect x="620" y="428" width="420" height="96" rx="28" fill="#F1F4F4"/>
+  <text x="216" y="358" fill="#FFFDF7" font-size="42" font-family="Trebuchet MS">Tab</text>
+  <text x="716" y="216" fill="#FFFDF7" font-size="30" font-family="Trebuchet MS">Fokus chizig‘i</text>
+  <text x="716" y="352" fill="#18343F" font-size="30" font-family="Trebuchet MS">Enter tugmasi</text>
+  <text x="716" y="488" fill="#18343F" font-size="30" font-family="Trebuchet MS">Keyingi qadam</text>
+</svg>

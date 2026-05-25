@@ -1,0 +1,154 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #f5f1e8;
+  --surface: #fffdf7;
+  --text: #18343f;
+  --muted: #5d7179;
+  --accent: #0e8f83;
+  --accent-soft: #daf5ef;
+  --success: #2a915f;
+  --warning: #c4811a;
+  --danger: #b4474d;
+  --border: rgba(24, 52, 63, 0.14);
+  --font-body: "Segoe UI", "Trebuchet MS", sans-serif;
+  --font-heading: Georgia, "Palatino Linotype", serif;
+  --font-dyslexia: Verdana, Tahoma, sans-serif;
+}
+
+html {
+  background: var(--background);
+  color: var(--text);
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(14, 143, 131, 0.14), transparent 28%),
+    radial-gradient(circle at top right, rgba(196, 129, 26, 0.12), transparent 24%),
+    linear-gradient(180deg, #f9f5ee 0%, #f4efe7 100%);
+  color: var(--text);
+  font-family: var(--font-body);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-heading);
+  letter-spacing: -0.02em;
+}
+
+::selection {
+  background: rgba(14, 143, 131, 0.2);
+}
+
+a,
+button,
+input,
+select,
+textarea {
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+*:focus-visible {
+  outline: 3px solid rgba(14, 143, 131, 0.45);
+  outline-offset: 3px;
+}
+
+.card-panel {
+  background: rgba(255, 253, 247, 0.9);
+  border: 1px solid var(--border);
+  box-shadow: 0 18px 50px rgba(15, 35, 45, 0.08);
+  backdrop-filter: blur(14px);
+}
+
+.prose-readable p {
+  margin-top: 0.85rem;
+  line-height: 1.8;
+}
+
+.print-only {
+  display: none;
+}
+
+html.a11y-large-text {
+  font-size: 18px;
+}
+
+html.a11y-high-contrast {
+  --background: #091418;
+  --surface: #0f1d22;
+  --text: #f7fbfd;
+  --muted: #d7e4e9;
+  --accent: #ffd95c;
+  --accent-soft: rgba(255, 217, 92, 0.16);
+  --success: #8df0bb;
+  --warning: #ffd95c;
+  --danger: #ff9aa3;
+  --border: rgba(247, 251, 253, 0.24);
+}
+
+html.a11y-high-contrast body {
+  background:
+    radial-gradient(circle at top left, rgba(255, 217, 92, 0.1), transparent 24%),
+    linear-gradient(180deg, #091418 0%, #0e1a1e 100%);
+}
+
+html.a11y-dyslexia body,
+html.a11y-dyslexia button,
+html.a11y-dyslexia input,
+html.a11y-dyslexia select,
+html.a11y-dyslexia textarea {
+  font-family: var(--font-dyslexia);
+  letter-spacing: 0.03em;
+}
+
+html.a11y-simplified .decorative-only {
+  display: none !important;
+}
+
+html.a11y-simplified .card-panel {
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+html.a11y-reduce-motion *,
+html.a11y-reduce-motion *::before,
+html.a11y-reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+html:not(.a11y-focus-outline) *:focus-visible {
+  outline-width: 0;
+}
+
+@media print {
+  body {
+    background: white;
+  }
+
+  .screen-only {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block;
+  }
+
+  .card-panel {
+    box-shadow: none;
+    border-color: #d0d7da;
+    background: white;
+  }
+}
