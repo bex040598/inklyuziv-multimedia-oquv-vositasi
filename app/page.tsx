@@ -1,108 +1,150 @@
 import Link from "next/link";
+import { ArrowRight, Headphones, Keyboard, Subtitles, Type } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { HeroPreview } from "@/components/shared/hero-preview";
+import { getHomePageData } from "@/lib/data";
+import { safeModeLabel } from "@/lib/utils";
 
-const features = [
-  "Matn, audio, video, rasm va subtitrlarni bir joyda boshqarish",
-  "Rolga mos dashboard: admin, o‘qituvchi, o‘quvchi va ota-ona",
-  "Accessibility sozlamalari: katta shrift, kontrast, oson til va TTS",
-  "Quiz, progress kuzatuvi va hisobotlarni chop etish rejimi"
-];
+export default async function HomePage() {
+  const featuredCourses = await getHomePageData();
 
-const promises = [
-  "Semantik HTML va klaviatura bilan boshqarish",
-  "Har bir rasm uchun alt matn va subtitr ko‘rinishi",
-  "Rang bilan berilgan ma’lumotni matn bilan ham tushuntirish",
-  "Reduce motion va focus outline kabi foydali moslamalar"
-];
-
-export default function HomePage() {
   return (
-    <div className="space-y-10">
-      <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-        <Card className="animate-rise overflow-hidden p-8 lg:p-10">
-          <div className="space-y-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted">
-              Ilmiy ishga mos MVP
+    <div className="space-y-12">
+      <section className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+        <Card className="space-y-6 p-8 lg:p-10">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+            Shaxsiy o‘rganish muhiti
+          </p>
+          <h1 className="max-w-4xl text-5xl font-semibold leading-tight lg:text-6xl">
+            Har bir o‘quvchi o‘z uslubida o‘rganadi
+          </h1>
+          <p className="max-w-3xl text-xl leading-9 text-[var(--muted)]">
+            Matnni kattalashtiring, darsni tinglang, subtitr bilan ko‘ring yoki oson tildagi izohdan boshlang. Bu yerda o‘rganish sizga moslashadi.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/register" className="inline-flex">
+              <Button>
+                Menga moslab boshlash
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+            <Link href="/courses" className="inline-flex">
+              <Button variant="secondary">Darslarni ko‘rish</Button>
+            </Link>
+            <Link href="/login" className="inline-flex">
+              <Button variant="ghost">Kirish</Button>
+            </Link>
+          </div>
+        </Card>
+        <HeroPreview />
+      </section>
+
+      <section className="grid gap-6 lg:grid-cols-[1fr_1fr]">
+        <Card className="space-y-5">
+          <div className="space-y-2">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+              Avval sizni tushunamiz
             </p>
-            <h2 className="max-w-3xl text-4xl font-semibold leading-tight lg:text-6xl">
-              Nogironligi bo‘lgan shaxslarni rivojlantirishga xizmat qiluvchi inklyuziv o‘quv
-              platforma
-            </h2>
-            <p className="max-w-2xl text-lg leading-8 text-muted">
-              “Inklyuziv Multimedia O‘quv Vositasi” darslar, testlar, individual kuzatuv va
-              accessibility sozlamalarini bitta qulay muhitda jamlaydi.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <Link href="/register">
-                <Button>Boshlash</Button>
-              </Link>
-              <Link href="/login">
-                <Button variant="secondary">Kirish</Button>
-              </Link>
-            </div>
+            <h2 className="text-3xl font-semibold">Nimalar yordam berishi mumkin?</h2>
+          </div>
+          <div className="grid gap-3">
+            {[
+              "Matnni o‘qish qiyin bo‘lsa",
+              "Video ovozini eshitish qiyin bo‘lsa",
+              "Sichqoncha ishlatish noqulay bo‘lsa",
+              "Uzoq matn charchatsa",
+              "Tez harakatlanuvchi animatsiyalar bezovta qilsa"
+            ].map((item) => (
+              <div key={item} className="rounded-[1.5rem] border border-[var(--border)] bg-white/80 px-4 py-4 text-base">
+                {item}
+              </div>
+            ))}
           </div>
         </Card>
 
-        <Card className="animate-rise space-y-5 [animation-delay:120ms]">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-muted">
-            Asosiy imkoniyatlar
-          </p>
-          <ul className="space-y-4 text-sm leading-7">
-            {features.map((feature) => (
-              <li key={feature} className="rounded-2xl border border-border bg-white/80 px-4 py-4">
-                {feature}
-              </li>
+        <Card className="space-y-5">
+          <div className="space-y-2">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+              Bir dars — bir nechta yo‘l
+            </p>
+            <h2 className="text-3xl font-semibold">Bitta mavzuni 5 xil formatda oching</h2>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {[
+              { icon: Type, title: "O‘qish rejimi" },
+              { icon: Headphones, title: "Tinglash rejimi" },
+              { icon: Subtitles, title: "Video + subtitr" },
+              { icon: Keyboard, title: "Oson til rejimi" },
+              { icon: ArrowRight, title: "Rasmli qisqa izoh" }
+            ].map((item) => (
+              <div key={item.title} className="rounded-[1.5rem] border border-[var(--border)] bg-white/80 p-4">
+                <item.icon className="h-5 w-5" />
+                <p className="mt-3 text-lg font-semibold">{item.title}</p>
+              </div>
             ))}
-          </ul>
+          </div>
         </Card>
       </section>
 
       <section className="grid gap-6 lg:grid-cols-3">
-        <Card className="space-y-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-muted">1-bosqich</p>
-          <h3 className="text-2xl font-semibold">Moslashuvchan kirish</h3>
-          <p className="text-sm leading-7 text-muted">
-            Oddiy login va register, foydalanuvchi roli va ehtiyojiga mos shaxsiy muhit.
+        <Card className="space-y-3">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+            Ota-ona va o‘qituvchi uchun
+          </p>
+          <h2 className="text-2xl font-semibold">Qattiq nazorat emas, xotirjam kuzatuv</h2>
+          <p className="text-base leading-7 text-[var(--muted)]">
+            “Nechta xato qildi?” degan savoldan ko‘ra, “qaysi format yengilroq bo‘ldi?” degan kuzatuv muhimroq.
           </p>
         </Card>
-        <Card className="space-y-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-muted">2-bosqich</p>
-          <h3 className="text-2xl font-semibold">Multimedia darslar</h3>
-          <p className="text-sm leading-7 text-muted">
-            Video, audio, subtitr, oson matn va nogironlik turiga mos tavsiyalar bilan darslar.
+        <Card className="space-y-3">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+            Platforma tushuntiradi
+          </p>
+          <h2 className="text-2xl font-semibold">Ovoz chiqaradi, subtitr beradi, sekinlashtiradi</h2>
+          <p className="text-base leading-7 text-[var(--muted)]">
+            TTS, transkript, audio tavsif, diqqatni jamlash rejimi va klaviatura boshqaruvi bir joyda ishlaydi.
           </p>
         </Card>
-        <Card className="space-y-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-muted">3-bosqich</p>
-          <h3 className="text-2xl font-semibold">Rivojlanishni kuzatish</h3>
-          <p className="text-sm leading-7 text-muted">
-            Test natijalari, kuchli tomonlar, yaxshilanish nuqtalari va ota-ona hisobotlari.
+        <Card className="space-y-3">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+            Dars yordamchisi
+          </p>
+          <h2 className="text-2xl font-semibold">Murakkab joyni boshqacha yo‘l bilan ko‘rsatadi</h2>
+          <p className="text-base leading-7 text-[var(--muted)]">
+            Qisqaroq tushuntirish, misol, xulosa yoki keyingi eng yengil qadamni taklif qiladi.
           </p>
         </Card>
       </section>
 
-      <section className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-        <Card className="space-y-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-muted">
-            Accessibility va WCAG
+      <section className="space-y-5">
+        <div className="space-y-2">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+            Boshlash uchun kurslar
           </p>
-          <h3 className="text-3xl font-semibold">Inklyuzivlik platforma markazida</h3>
-          <p className="text-sm leading-7 text-muted">
-            Dastur nafaqat o‘quv kontentini ko‘rsatadi, balki foydalanuvchining individual
-            ehtiyojlariga mos ravishda interfeysni ham o‘zgartira oladi.
-          </p>
-        </Card>
-        <Card>
-          <ul className="grid gap-4 md:grid-cols-2">
-            {promises.map((item) => (
-              <li key={item} className="rounded-2xl border border-border bg-white/80 p-5 text-sm">
-                {item}
-              </li>
-            ))}
-          </ul>
-        </Card>
+          <h2 className="text-3xl font-semibold">Bugun ko‘rish mumkin bo‘lgan yo‘llar</h2>
+        </div>
+        <div className="grid gap-5 lg:grid-cols-3">
+          {featuredCourses.map((course) => (
+            <Card key={course.id} className="space-y-4">
+              <div className="space-y-2">
+                <h3 className="text-2xl font-semibold">{course.title}</h3>
+                <p className="text-base leading-7 text-[var(--muted)]">{course.description}</p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {course.recommendedModes.map((mode) => (
+                  <span key={mode} className="rounded-full bg-[var(--accent-soft)] px-3 py-2 text-sm font-semibold">
+                    {safeModeLabel(mode)}
+                  </span>
+                ))}
+              </div>
+              <Link href={`/courses/${course.id}`} className="inline-flex text-sm font-semibold text-[var(--accent)]">
+                Kursni ko‘rish
+              </Link>
+            </Card>
+          ))}
+        </div>
       </section>
     </div>
   );

@@ -5,17 +5,15 @@ import { Card } from "@/components/ui/card";
 
 export default function NotFound() {
   return (
-    <Card className="mx-auto max-w-2xl text-center">
-      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-muted">404</p>
-      <h2 className="mt-3 text-4xl font-semibold">Sahifa topilmadi</h2>
-      <p className="mt-4 text-sm leading-7 text-muted">
-        Siz qidirayotgan sahifa mavjud emas yoki boshqa manzilga ko‘chirilgan bo‘lishi mumkin.
+    <Card className="mx-auto max-w-3xl space-y-4 text-center">
+      <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">Topilmadi</p>
+      <h1 className="text-4xl font-semibold">Bu sahifani topa olmadik</h1>
+      <p className="text-lg leading-8 text-[var(--muted)]">
+        Havola eskirgan bo‘lishi mumkin. Bosh sahifaga qaytsangiz, kerakli darsni yana topib olamiz.
       </p>
-      <div className="mt-6">
-        <Link href="/">
-          <Button>Bosh sahifaga qaytish</Button>
-        </Link>
-      </div>
+      <Link href="/" className="inline-flex">
+        <Button>Bosh sahifaga qaytish</Button>
+      </Link>
     </Card>
   );
 }

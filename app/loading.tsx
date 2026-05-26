@@ -1,15 +1,13 @@
-import { Card } from "@/components/ui/card";
-
 export default function Loading() {
   return (
-    <div className="grid gap-6 lg:grid-cols-3">
-      {Array.from({ length: 3 }).map((_, index) => (
-        <Card key={index} className="animate-pulse space-y-4">
-          <div className="h-4 w-32 rounded bg-accentSoft" />
-          <div className="h-8 w-3/4 rounded bg-accentSoft" />
-          <div className="h-20 rounded bg-accentSoft" />
-        </Card>
-      ))}
+    <div className="rounded-[2rem] border border-[var(--border)] bg-[var(--surface)] p-8">
+      <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+        Yuklanmoqda
+      </p>
+      <h2 className="mt-3 text-3xl font-semibold">Siz uchun sahifa tayyorlanyapti</h2>
+      <p className="mt-3 text-base leading-7 text-[var(--muted)]">
+        Hamma narsa joyiga tushishi uchun bir necha soniya kutamiz.
+      </p>
     </div>
   );
 }

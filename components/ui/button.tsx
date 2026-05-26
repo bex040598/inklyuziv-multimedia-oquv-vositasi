@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 
 type ButtonProps = PropsWithChildren<
   ButtonHTMLAttributes<HTMLButtonElement> & {
-    variant?: "primary" | "secondary" | "ghost" | "danger";
+    variant?: "primary" | "secondary" | "ghost" | "danger" | "soft";
     fullWidth?: boolean;
   }
 >;
@@ -21,13 +21,15 @@ export function Button({
     <button
       type={type}
       className={cn(
-        "inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold",
-        "border border-transparent shadow-sm",
-        variant === "primary" && "bg-accent text-white hover:-translate-y-0.5 hover:shadow-lg",
+        "inline-flex min-h-11 items-center justify-center rounded-full border px-5 py-3 text-base font-semibold transition-transform",
+        variant === "primary" &&
+          "border-[var(--accent)] bg-[var(--accent)] text-white shadow-[0_10px_25px_rgba(27,100,135,0.18)] hover:-translate-y-0.5",
         variant === "secondary" &&
-          "border-border bg-accentSoft text-text hover:border-accent hover:bg-white",
-        variant === "ghost" && "border-border bg-transparent text-text hover:bg-white/70",
-        variant === "danger" && "bg-danger text-white hover:opacity-90",
+          "border-[var(--border)] bg-white text-[var(--text)] hover:border-[var(--accent)] hover:bg-[var(--accent-soft)]",
+        variant === "ghost" &&
+          "border-transparent bg-transparent text-[var(--text)] hover:border-[var(--border)] hover:bg-white/80",
+        variant === "danger" && "border-[var(--danger)] bg-[var(--danger)] text-white",
+        variant === "soft" && "border-[var(--border)] bg-[var(--accent-soft)] text-[var(--text)]",
         fullWidth && "w-full",
         className
       )}

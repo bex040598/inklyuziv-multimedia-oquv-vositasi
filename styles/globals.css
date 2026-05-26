@@ -3,34 +3,127 @@
 @tailwind utilities;
 
 :root {
-  --background: #f5f1e8;
-  --surface: #fffdf7;
-  --text: #18343f;
-  --muted: #5d7179;
-  --accent: #0e8f83;
-  --accent-soft: #daf5ef;
-  --success: #2a915f;
-  --warning: #c4811a;
-  --danger: #b4474d;
-  --border: rgba(24, 52, 63, 0.14);
+  --background: #f6f1e7;
+  --surface: rgba(255, 251, 245, 0.92);
+  --surface-strong: #fffaf2;
+  --text: #173042;
+  --muted: #5a6f7b;
+  --accent: #236d90;
+  --accent-soft: #dfeef5;
+  --success: #2f7d59;
+  --warning: #bd7a21;
+  --danger: #b14d52;
+  --border: rgba(23, 48, 66, 0.14);
+  --focus: #0f6b94;
   --font-body: "Segoe UI", "Trebuchet MS", sans-serif;
-  --font-heading: Georgia, "Palatino Linotype", serif;
+  --font-heading: "Iowan Old Style", Georgia, serif;
   --font-dyslexia: Verdana, Tahoma, sans-serif;
+  --reading-width: 74ch;
 }
 
 html {
   background: var(--background);
   color: var(--text);
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+html[data-font-scale="large"] {
+  font-size: 18px;
+}
+
+html[data-font-scale="xlarge"] {
+  font-size: 20px;
+}
+
+html[data-contrast-mode="high"] {
+  --background: #081317;
+  --surface: rgba(12, 28, 34, 0.97);
+  --surface-strong: #112831;
+  --text: #f5fbfd;
+  --muted: #d4e5eb;
+  --accent: #ffd45f;
+  --accent-soft: rgba(255, 212, 95, 0.18);
+  --success: #9df7c7;
+  --warning: #ffd45f;
+  --danger: #ffb5b7;
+  --border: rgba(245, 251, 253, 0.2);
+  --focus: #ffe082;
+}
+
+html[data-contrast-mode="calm_dark"] {
+  --background: #10191d;
+  --surface: rgba(20, 31, 36, 0.96);
+  --surface-strong: #17252b;
+  --text: #eef4f5;
+  --muted: #c1d0d5;
+  --accent: #91c7dd;
+  --accent-soft: rgba(145, 199, 221, 0.18);
+  --success: #8fd0aa;
+  --warning: #d8bf86;
+  --danger: #dc9fa3;
+  --border: rgba(238, 244, 245, 0.12);
+  --focus: #9fd9ee;
 }
 
 body {
   min-height: 100vh;
   background:
-    radial-gradient(circle at top left, rgba(14, 143, 131, 0.14), transparent 28%),
-    radial-gradient(circle at top right, rgba(196, 129, 26, 0.12), transparent 24%),
-    linear-gradient(180deg, #f9f5ee 0%, #f4efe7 100%);
+    radial-gradient(circle at top left, rgba(136, 195, 222, 0.22), transparent 28%),
+    radial-gradient(circle at top right, rgba(255, 217, 140, 0.2), transparent 24%),
+    linear-gradient(180deg, #fbf6ef 0%, var(--background) 34%, #f3eee5 100%);
   color: var(--text);
   font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+html.a11y-calmMode body {
+  background: linear-gradient(180deg, #f7f2ea 0%, var(--background) 100%);
+}
+
+html.a11y-dyslexiaFont body,
+html.a11y-dyslexiaFont button,
+html.a11y-dyslexiaFont input,
+html.a11y-dyslexiaFont textarea,
+html.a11y-dyslexiaFont select {
+  font-family: var(--font-dyslexia);
+}
+
+html.a11y-letterSpacing body {
+  letter-spacing: 0.03em;
+}
+
+html.a11y-lineHeight p,
+html.a11y-lineHeight li {
+  line-height: 2;
+}
+
+html.a11y-largeControls button,
+html.a11y-largeControls a,
+html.a11y-largeControls input,
+html.a11y-largeControls select {
+  min-height: 3rem;
+}
+
+html.a11y-simplifiedUi .decorative-only,
+html.a11y-simplifiedUi .can-hide-in-focus {
+  display: none !important;
+}
+
+html.a11y-keyboardMode *:focus-visible,
+*:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 4px;
+}
+
+html.a11y-reduceMotion *,
+html.a11y-reduceMotion *::before,
+html.a11y-reduceMotion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
 }
 
 h1,
@@ -41,101 +134,50 @@ h4 {
   letter-spacing: -0.02em;
 }
 
-::selection {
-  background: rgba(14, 143, 131, 0.2);
-}
-
-a,
-button,
+p,
+li,
+dd,
+dt,
+label,
 input,
-select,
-textarea {
-  transition:
-    background-color 180ms ease,
-    border-color 180ms ease,
-    color 180ms ease,
-    box-shadow 180ms ease,
-    transform 180ms ease;
+button,
+textarea,
+select {
+  font-size: 1rem;
 }
 
-*:focus-visible {
-  outline: 3px solid rgba(14, 143, 131, 0.45);
-  outline-offset: 3px;
+::selection {
+  background: rgba(35, 109, 144, 0.18);
 }
 
-.card-panel {
-  background: rgba(255, 253, 247, 0.9);
-  border: 1px solid var(--border);
-  box-shadow: 0 18px 50px rgba(15, 35, 45, 0.08);
-  backdrop-filter: blur(14px);
+.readable-prose {
+  max-width: var(--reading-width);
 }
 
-.prose-readable p {
-  margin-top: 0.85rem;
-  line-height: 1.8;
+.readable-prose p {
+  margin-top: 0.9rem;
+  font-size: 1.075rem;
+  line-height: 1.95;
+}
+
+.surface-grid {
+  background-image:
+    linear-gradient(rgba(23, 48, 66, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(23, 48, 66, 0.04) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+.screen-only {
+  display: block;
 }
 
 .print-only {
   display: none;
 }
 
-html.a11y-large-text {
-  font-size: 18px;
-}
-
-html.a11y-high-contrast {
-  --background: #091418;
-  --surface: #0f1d22;
-  --text: #f7fbfd;
-  --muted: #d7e4e9;
-  --accent: #ffd95c;
-  --accent-soft: rgba(255, 217, 92, 0.16);
-  --success: #8df0bb;
-  --warning: #ffd95c;
-  --danger: #ff9aa3;
-  --border: rgba(247, 251, 253, 0.24);
-}
-
-html.a11y-high-contrast body {
-  background:
-    radial-gradient(circle at top left, rgba(255, 217, 92, 0.1), transparent 24%),
-    linear-gradient(180deg, #091418 0%, #0e1a1e 100%);
-}
-
-html.a11y-dyslexia body,
-html.a11y-dyslexia button,
-html.a11y-dyslexia input,
-html.a11y-dyslexia select,
-html.a11y-dyslexia textarea {
-  font-family: var(--font-dyslexia);
-  letter-spacing: 0.03em;
-}
-
-html.a11y-simplified .decorative-only {
-  display: none !important;
-}
-
-html.a11y-simplified .card-panel {
-  box-shadow: none;
-  backdrop-filter: none;
-}
-
-html.a11y-reduce-motion *,
-html.a11y-reduce-motion *::before,
-html.a11y-reduce-motion *::after {
-  animation-duration: 0.01ms !important;
-  animation-iteration-count: 1 !important;
-  transition-duration: 0.01ms !important;
-  scroll-behavior: auto !important;
-}
-
-html:not(.a11y-focus-outline) *:focus-visible {
-  outline-width: 0;
-}
-
 @media print {
   body {
-    background: white;
+    background: white !important;
   }
 
   .screen-only {
@@ -143,12 +185,11 @@ html:not(.a11y-focus-outline) *:focus-visible {
   }
 
   .print-only {
-    display: block;
+    display: block !important;
   }
 
-  .card-panel {
-    box-shadow: none;
-    border-color: #d0d7da;
-    background: white;
+  .print-card,
+  [class*="shadow"] {
+    box-shadow: none !important;
   }
 }

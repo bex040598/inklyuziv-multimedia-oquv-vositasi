@@ -22,8 +22,49 @@ enum CourseLevel {
 
 enum QuestionType {
   SINGLE_CHOICE
+  MULTIPLE_CHOICE
   TRUE_FALSE
+  IMAGE_CHOICE
+  AUDIO_PROMPT
   SHORT_ANSWER
+  ORDERING
+  MATCHING
+}
+
+enum LearningMode {
+  READING
+  LISTENING
+  VIDEO
+  VISUAL
+  MIXED
+}
+
+enum FontScale {
+  NORMAL
+  LARGE
+  XLARGE
+}
+
+enum ContrastMode {
+  NORMAL
+  HIGH
+  CALM_DARK
+}
+
+enum EmotionalState {
+  CALM
+  TIRED
+  READY
+  NEED_HELP
+  LATER
+}
+
+enum PromptType {
+  SIMPLIFY
+  EXAMPLE
+  SUMMARIZE
+  QUIZ_HELP
+  NEXT_STEP
 }
 
 model User {
@@ -33,6 +74,8 @@ model User {
   passwordHash          String
   role                  Role                   @default(STUDENT)
   disabilityProfile     String?
+  preferredLearningMode LearningMode?
+  childEmail            String?
   parentId              String?
   parent                User?                  @relation("ParentChildren", fields: [parentId], references: [id])
   children              User[]                 @relation("ParentChildren")
@@ -40,63 +83,87 @@ model User {
   createdCourses        Course[]               @relation("CourseCreator")
   quizAttempts          QuizAttempt[]
   progressEntries       Progress[]
+  aiInteractions        AiInteraction[]
   createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
 }
 
 model AccessibilitySettings {
-  id             String  @id @default(cuid())
-  userId         String  @unique
-  largeText      Boolean @default(false)
-  highContrast   Boolean @default(false)
-  simplifiedUi   Boolean @default(false)
-  dyslexiaFont   Boolean @default(false)
-  focusOutline   Boolean @default(true)
-  reduceMotion   Boolean @default(false)
-  captions       Boolean @default(true)
-  textToSpeech   Boolean @default(true)
-  easyLanguage   Boolean @default(false)
-  user           User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id               String       @id @default(cuid())
+  userId           String       @unique
+  fontScale        FontScale    @default(NORMAL)
+  contrastMode     ContrastMode @default(NORMAL)
+  dyslexiaFont     Boolean      @default(false)
+  reduceMotion     Boolean      @default(false)
+  captions         Boolean      @default(true)
+  transcript       Boolean      @default(true)
+  textToSpeech     Boolean      @default(true)
+  audioDescription Boolean      @default(false)
+  readingRuler     Boolean      @default(false)
+  letterSpacing    Boolean      @default(false)
+  lineHeight       Boolean      @default(false)
+  simplifiedUi     Boolean      @default(false)
+  easyLanguage     Boolean      @default(false)
+  largeControls    Boolean      @default(false)
+  keyboardMode     Boolean      @default(false)
+  calmMode         Boolean      @default(false)
+  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Course {
-  id          String      @id @default(cuid())
-  title       String
-  description String
-  level       CourseLevel
-  createdById String
-  createdBy   User        @relation("CourseCreator", fields: [createdById], references: [id], onDelete: Restrict)
-  lessons     Lesson[]
-  createdAt   DateTime    @default(now())
+  id                String      @id @default(cuid())
+  title             String
+  description       String
+  level             CourseLevel
+  estimatedDuration Int
+  coverImage        String?
+  coverAlt          String
+  createdById       String
+  createdBy         User        @relation("CourseCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  lessons           Lesson[]
+  createdAt         DateTime    @default(now())
 }
 
 model Lesson {
-  id                         String       @id @default(cuid())
-  courseId                   String
-  title                      String
-  description                String
-  content                    String
-  easyContent                String
-  audioUrl                   String?
-  videoUrl                   String?
-  imageUrl                   String?
-  imageAlt                   String
-  captions                   String?
-  keywords                   String?
-  level                      CourseLevel
-  disabilityRecommendations  Json?
-  createdAt                  DateTime     @default(now())
-  course                     Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  quiz                       Quiz?
-  progressEntries            Progress[]
+  id                        String      @id @default(cuid())
+  courseId                  String
+  title                     String
+  description               String
+  learningGoals             Json
+  content                   String
+  easyContent               String
+  shortSummary              String
+  pictogramSummary          Json
+  audioUrl                  String?
+  audioTranscript           String?
+  videoUrl                  String?
+  videoCaptions             String?
+  videoTranscript           String?
+  audioDescription          String?
+  imageUrl                  String?
+  imageAlt                  String
+  imageLongDescription      String?
+  keywords                  Json
+  level                     CourseLevel
+  estimatedMinutes          Int
+  recommendedModes          Json
+  disabilityRecommendations Json
+  createdAt                 DateTime    @default(now())
+  course                    Course      @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  quiz                      Quiz?
+  progressEntries           Progress[]
+  aiInteractions            AiInteraction[]
 }
 
 model Quiz {
-  id        String        @id @default(cuid())
-  lessonId  String        @unique
-  title     String
-  lesson    Lesson        @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  questions Question[]
-  attempts  QuizAttempt[]
+  id           String        @id @default(cuid())
+  lessonId     String        @unique
+  title        String
+  friendlyIntro String
+  createdAt    DateTime      @default(now())
+  lesson       Lesson        @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  questions    Question[]
+  attempts     QuizAttempt[]
 }
 
 model Question {
@@ -104,34 +171,60 @@ model Question {
   quizId         String
   type           QuestionType
   text           String
+  easyText       String
+  audioPromptUrl String?
+  imageUrl       String?
+  imageAlt       String?
   options        Json?
-  correctAnswer  String
-  explanation    String?
+  correctAnswer  Json
+  explanation    String
+  easyExplanation String
   quiz           Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
 }
 
 model QuizAttempt {
-  id        String   @id @default(cuid())
-  quizId     String
-  userId     String
-  score      Int
-  answers    Json
-  createdAt  DateTime @default(now())
-  quiz       Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                  String   @id @default(cuid())
+  quizId              String
+  userId              String
+  score               Int
+  answers             Json
+  strengths           Json
+  improvementAreas    Json
+  recommendedNextStep String
+  createdAt           DateTime @default(now())
+  quiz                Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Progress {
-  id                String   @id @default(cuid())
+  id                String         @id @default(cuid())
   userId            String
   lessonId          String
-  completed         Boolean  @default(false)
-  lastOpenedAt      DateTime @default(now())
+  completed         Boolean        @default(false)
+  preferredModeUsed LearningMode?
+  timeSpent         Int            @default(0)
+  lastOpenedAt      DateTime       @default(now())
   teacherComment    String?
   strengths         String?
   improvementAreas  String?
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  lesson            Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  learnerFeedback   String?
+  emotionalState    EmotionalState?
+  user              User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson            Lesson         @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
   @@unique([userId, lessonId])
+}
+
+model AiInteraction {
+  id           String     @id @default(cuid())
+  userId       String
+  lessonId     String
+  promptType   PromptType
+  userQuestion String?
+  response     String
+  createdAt    DateTime   @default(now())
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson       Lesson     @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@map("AIInteraction")
 }

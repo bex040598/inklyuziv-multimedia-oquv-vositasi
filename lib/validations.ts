@@ -1,185 +1,111 @@
-import type { Role } from "@prisma/client";
+import { z } from "zod";
 
-type ValidationResult = {
-  errors: Record<string, string>;
-  values: Record<string, string>;
-};
+const emailField = z
+  .string()
+  .trim()
+  .min(1, "Email kiriting.")
+  .email("Email manzilini yana bir tekshirib ko‘ring.");
 
-function getString(formData: FormData, key: string) {
-  const value = formData.get(key);
-  return typeof value === "string" ? value.trim() : "";
-}
+const passwordField = z
+  .string()
+  .min(6, "Parol kamida 6 belgidan iborat bo‘lsin.")
+  .max(64, "Parol juda uzun bo‘lib ketdi.");
 
-function pushError(errors: Record<string, string>, key: string, message: string) {
-  if (!errors[key]) {
-    errors[key] = message;
-  }
-}
+export const loginSchema = z.object({
+  email: emailField,
+  password: passwordField
+});
 
-export function validateRegister(formData: FormData): ValidationResult {
-  const errors: Record<string, string> = {};
-  const name = getString(formData, "name");
-  const email = getString(formData, "email").toLowerCase();
-  const password = getString(formData, "password");
-  const role = getString(formData, "role");
-  const disabilityProfile = getString(formData, "disabilityProfile");
-  const childEmail = getString(formData, "childEmail").toLowerCase();
-
-  if (name.length < 3) {
-    pushError(errors, "name", "Ism kamida 3 ta belgidan iborat bo‘lsin.");
-  }
-
-  if (!email.includes("@")) {
-    pushError(errors, "email", "To‘g‘ri email manzil kiriting.");
-  }
-
-  if (password.length < 6) {
-    pushError(errors, "password", "Parol kamida 6 ta belgidan iborat bo‘lsin.");
-  }
-
-  if (!["STUDENT", "TEACHER", "PARENT"].includes(role)) {
-    pushError(errors, "role", "Rolni tanlang.");
-  }
-
-  return {
-    errors,
-    values: { name, email, password, role, disabilityProfile, childEmail }
-  };
-}
-
-export function validateLogin(formData: FormData): ValidationResult {
-  const errors: Record<string, string> = {};
-  const email = getString(formData, "email").toLowerCase();
-  const password = getString(formData, "password");
-
-  if (!email.includes("@")) {
-    pushError(errors, "email", "Email manzil noto‘g‘ri.");
-  }
-
-  if (password.length < 6) {
-    pushError(errors, "password", "Parol noto‘g‘ri formatda.");
-  }
-
-  return {
-    errors,
-    values: { email, password }
-  };
-}
-
-export function validateCourse(formData: FormData): ValidationResult {
-  const errors: Record<string, string> = {};
-  const title = getString(formData, "title");
-  const description = getString(formData, "description");
-  const level = getString(formData, "level");
-
-  if (title.length < 4) {
-    pushError(errors, "title", "Kurs nomi kamida 4 ta belgidan iborat bo‘lsin.");
-  }
-
-  if (description.length < 10) {
-    pushError(errors, "description", "Kurs tavsifi aniqroq yozilsin.");
-  }
-
-  if (!["BEGINNER", "INTERMEDIATE", "ADVANCED"].includes(level)) {
-    pushError(errors, "level", "Darajani tanlang.");
-  }
-
-  return {
-    errors,
-    values: { title, description, level }
-  };
-}
-
-export function validateLesson(formData: FormData): ValidationResult {
-  const errors: Record<string, string> = {};
-  const keys = [
-    "courseId",
-    "title",
-    "description",
-    "content",
-    "easyContent",
-    "audioUrl",
-    "videoUrl",
-    "imageUrl",
-    "imageAlt",
-    "captions",
-    "keywords",
-    "level"
-  ];
-
-  const values = Object.fromEntries(keys.map((key) => [key, getString(formData, key)]));
-
-  if (!values.courseId) {
-    pushError(errors, "courseId", "Kurs tanlang.");
-  }
-
-  if (values.title.length < 4) {
-    pushError(errors, "title", "Dars sarlavhasi kamida 4 ta belgidan iborat bo‘lsin.");
-  }
-
-  if (values.description.length < 10) {
-    pushError(errors, "description", "Qisqa tavsifni boyiting.");
-  }
-
-  if (values.content.length < 20) {
-    pushError(errors, "content", "Asosiy matn yetarlicha to‘liq emas.");
-  }
-
-  if (values.easyContent.length < 10) {
-    pushError(errors, "easyContent", "Oson o‘qiladigan versiya ham kiriting.");
-  }
-
-  if (!values.imageAlt) {
-    pushError(errors, "imageAlt", "Rasm uchun alt matn majburiy.");
-  }
-
-  if (!["BEGINNER", "INTERMEDIATE", "ADVANCED"].includes(values.level)) {
-    pushError(errors, "level", "Dars darajasi tanlanishi kerak.");
-  }
-
-  return { errors, values };
-}
-
-export function validateQuiz(formData: FormData): ValidationResult {
-  const errors: Record<string, string> = {};
-  const lessonId = getString(formData, "lessonId");
-  const title = getString(formData, "title");
-
-  if (!lessonId) {
-    pushError(errors, "lessonId", "Dars tanlanishi kerak.");
-  }
-
-  if (title.length < 4) {
-    pushError(errors, "title", "Quiz sarlavhasi qisqa.");
-  }
-
-  for (let index = 1; index <= 3; index += 1) {
-    const text = getString(formData, `questionText${index}`);
-    const type = getString(formData, `questionType${index}`);
-    const correctAnswer = getString(formData, `correctAnswer${index}`);
-
-    if (text.length < 5) {
-      pushError(errors, `questionText${index}`, `${index}-savol matni yetarli emas.`);
+export const registerSchema = z
+  .object({
+    name: z.string().trim().min(3, "Ismingizni biroz to‘liqroq yozing."),
+    email: emailField,
+    password: passwordField,
+    role: z.enum(["STUDENT", "TEACHER", "PARENT"], {
+      message: "Rolni tanlang."
+    }),
+    disabilityProfile: z.string().trim().max(280, "Qisqaroq yozsangiz ham yetarli.").optional(),
+    preferredLearningMode: z.enum(["READING", "LISTENING", "VIDEO", "VISUAL", "MIXED"], {
+      message: "O‘rganish usulini tanlang."
+    }),
+    childEmail: z.string().trim().optional()
+  })
+  .superRefine((value, context) => {
+    if (value.role === "PARENT" && value.childEmail) {
+      const result = emailField.safeParse(value.childEmail);
+      if (!result.success) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["childEmail"],
+          message: "Farzand emailini to‘g‘ri formatda kiriting."
+        });
+      }
     }
+  });
 
-    if (!["SINGLE_CHOICE", "TRUE_FALSE", "SHORT_ANSWER"].includes(type)) {
-      pushError(errors, `questionType${index}`, `${index}-savol turi tanlanmagan.`);
-    }
+export const onboardingSchema = z.object({
+  fontScale: z.enum(["NORMAL", "LARGE", "XLARGE"]),
+  contrastMode: z.enum(["NORMAL", "HIGH", "CALM_DARK"]),
+  preferredLearningMode: z.enum(["READING", "LISTENING", "VIDEO", "VISUAL", "MIXED"]),
+  needs: z.array(z.string()).default([]),
+  blockers: z.array(z.string()).default([])
+});
 
-    if (!correctAnswer) {
-      pushError(errors, `correctAnswer${index}`, `${index}-savol uchun to‘g‘ri javob kiriting.`);
-    }
-  }
+export const accessibilitySchema = z.object({
+  fontScale: z.enum(["NORMAL", "LARGE", "XLARGE"]),
+  contrastMode: z.enum(["NORMAL", "HIGH", "CALM_DARK"]),
+  dyslexiaFont: z.boolean(),
+  reduceMotion: z.boolean(),
+  captions: z.boolean(),
+  transcript: z.boolean(),
+  textToSpeech: z.boolean(),
+  audioDescription: z.boolean(),
+  readingRuler: z.boolean(),
+  letterSpacing: z.boolean(),
+  lineHeight: z.boolean(),
+  simplifiedUi: z.boolean(),
+  easyLanguage: z.boolean(),
+  largeControls: z.boolean(),
+  keyboardMode: z.boolean(),
+  calmMode: z.boolean()
+});
 
-  return {
-    errors,
-    values: {
-      lessonId,
-      title
-    }
-  };
-}
+export const aiExplainSchema = z.object({
+  lessonId: z.string().trim().min(1, "Dars topilmadi."),
+  mode: z.enum(["simplify", "example", "summarize", "quiz-help", "next-step"]),
+  userText: z.string().trim().max(300).optional(),
+  accessibilityProfile: z.string().trim().max(200).optional()
+});
 
-export function validateRole(role: string): role is Role {
-  return ["ADMIN", "TEACHER", "STUDENT", "PARENT"].includes(role);
-}
+export const lessonFeedbackSchema = z.object({
+  lessonId: z.string().trim().min(1),
+  feedback: z.string().trim().max(200).optional(),
+  learnerFeedback: z.string().trim().max(200).optional(),
+  emotionalState: z.enum(["CALM", "TIRED", "READY", "NEED_HELP", "LATER"]).optional(),
+  preferredModeUsed: z.enum(["READING", "LISTENING", "VIDEO", "VISUAL", "MIXED"]).optional(),
+  completed: z.boolean().optional()
+});
+
+export const teacherNoteSchema = z.object({
+  progressId: z.string().trim().min(1),
+  teacherComment: z.string().trim().max(280).optional(),
+  strengths: z.string().trim().max(280).optional(),
+  improvementAreas: z.string().trim().max(280).optional()
+});
+
+export const roleUpdateSchema = z.object({
+  userId: z.string().trim().min(1),
+  role: z.enum(["ADMIN", "TEACHER", "STUDENT", "PARENT"])
+});
+
+export const quizAnswerSchema = z.object({
+  quizId: z.string().trim().min(1),
+  answers: z.record(z.string(), z.union([z.string(), z.array(z.string())]))
+});
+
+export type LoginInput = z.infer<typeof loginSchema>;
+export type RegisterInput = z.infer<typeof registerSchema>;
+export type OnboardingInput = z.infer<typeof onboardingSchema>;
+export type AccessibilityInput = z.infer<typeof accessibilitySchema>;
+export type AIExplainInput = z.infer<typeof aiExplainSchema>;
+export type QuizAnswerInput = z.infer<typeof quizAnswerSchema>;

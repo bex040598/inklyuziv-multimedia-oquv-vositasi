@@ -1,8 +1,8 @@
+import { Role } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { isReadOnlyDemo } from "@/lib/runtime";
 
 type Context = {
   params: Promise<{
@@ -11,13 +11,9 @@ type Context = {
 };
 
 export async function POST(_request: Request, context: Context) {
-  if (isReadOnlyDemo) {
-    return NextResponse.json({ ok: true });
-  }
-
   const user = await getCurrentUser();
 
-  if (!user || user.role !== "STUDENT") {
+  if (!user || user.role !== Role.STUDENT) {
     return NextResponse.json({ ok: true });
   }
 

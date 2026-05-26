@@ -7,13 +7,13 @@ import { Button } from "@/components/ui/button";
 type SubmitButtonProps = {
   label: string;
   pendingLabel?: string;
-  variant?: "primary" | "secondary" | "ghost" | "danger";
+  variant?: "primary" | "secondary" | "ghost" | "danger" | "soft";
   fullWidth?: boolean;
 };
 
 export function SubmitButton({
   label,
-  pendingLabel = "Yuklanmoqda...",
+  pendingLabel = "Saqlanmoqda...",
   variant = "primary",
   fullWidth = true
 }: SubmitButtonProps) {

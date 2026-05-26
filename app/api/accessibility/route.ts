@@ -2,45 +2,33 @@ import { NextResponse } from "next/server";
 
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { isReadOnlyDemo } from "@/lib/runtime";
+import { accessibilitySchema } from "@/lib/validations";
 
 export async function POST(request: Request) {
-  if (isReadOnlyDemo) {
-    return NextResponse.json({ ok: true });
-  }
-
   const user = await getCurrentUser();
 
   if (!user) {
     return NextResponse.json({ ok: true });
   }
 
-  const data = (await request.json()) as Record<string, boolean>;
+  const body = (await request.json()) as Record<string, unknown>;
+  const parsed = accessibilitySchema.safeParse(body);
+
+  if (!parsed.success) {
+    return NextResponse.json(
+      {
+        message: "Sozlamalarni saqlashda kichik muammo bo‘ldi."
+      },
+      { status: 400 }
+    );
+  }
 
   await prisma.accessibilitySettings.upsert({
     where: { userId: user.id },
-    update: {
-      largeText: Boolean(data.largeText),
-      highContrast: Boolean(data.highContrast),
-      simplifiedUi: Boolean(data.simplifiedUi),
-      dyslexiaFont: Boolean(data.dyslexiaFont),
-      focusOutline: Boolean(data.focusOutline),
-      reduceMotion: Boolean(data.reduceMotion),
-      captions: Boolean(data.captions),
-      textToSpeech: Boolean(data.textToSpeech),
-      easyLanguage: Boolean(data.easyLanguage)
-    },
+    update: parsed.data,
     create: {
       userId: user.id,
-      largeText: Boolean(data.largeText),
-      highContrast: Boolean(data.highContrast),
-      simplifiedUi: Boolean(data.simplifiedUi),
-      dyslexiaFont: Boolean(data.dyslexiaFont),
-      focusOutline: Boolean(data.focusOutline),
-      reduceMotion: Boolean(data.reduceMotion),
-      captions: Boolean(data.captions),
-      textToSpeech: Boolean(data.textToSpeech),
-      easyLanguage: Boolean(data.easyLanguage)
+      ...parsed.data
     }
   });
 

@@ -9,9 +9,9 @@ type StatCardProps = {
 export function StatCard({ label, value, description }: StatCardProps) {
   return (
     <Card className="space-y-3">
-      <p className="text-sm text-muted">{label}</p>
-      <p className="text-3xl font-semibold">{value}</p>
-      <p className="text-sm leading-7 text-muted">{description}</p>
+      <p className="text-sm font-medium text-[var(--muted)]">{label}</p>
+      <p className="text-4xl font-semibold tracking-tight">{value}</p>
+      <p className="text-base leading-7 text-[var(--muted)]">{description}</p>
     </Card>
   );
 }

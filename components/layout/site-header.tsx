@@ -1,9 +1,8 @@
 import Link from "next/link";
 
 import { logoutAction } from "@/app/actions";
-import { AccessibilityPanel } from "@/components/accessibility/accessibility-panel";
 import { Button } from "@/components/ui/button";
-import { roleLabels } from "@/lib/constants";
+import { dashboardPaths, roleLabels, siteTitle } from "@/lib/constants";
 import type { SessionUser } from "@/types";
 
 type SiteHeaderProps = {
@@ -12,76 +11,73 @@ type SiteHeaderProps = {
 
 export function SiteHeader({ currentUser }: SiteHeaderProps) {
   return (
-    <header className="screen-only border-b border-white/60 bg-white/55 backdrop-blur-xl">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 py-5 lg:flex-row lg:items-center lg:justify-between lg:px-6">
-        <div className="space-y-2">
-          <Link href="/" className="inline-flex items-center gap-3">
-            <div className="decorative-only h-11 w-11 rounded-2xl bg-accentSoft" />
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-muted">
-                Inklyuziv platforma
-              </p>
-              <h1 className="text-xl font-semibold">Inklyuziv Multimedia O‘quv Vositasi</h1>
-            </div>
-          </Link>
-          <p className="max-w-2xl text-sm leading-7 text-muted">
-            Nogironligi bo‘lgan shaxslar uchun moslashuvchan, multimedia asosidagi o‘quv muhit.
-          </p>
+    <header className="screen-only sticky top-0 z-30 border-b border-white/60 bg-[var(--surface)]/80 backdrop-blur-xl">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 py-4 lg:flex-row lg:items-center lg:justify-between lg:px-6">
+        <div className="flex items-center gap-4">
+          <div className="decorative-only h-14 w-14 rounded-[1.5rem] bg-[linear-gradient(135deg,#dfeef5,#ffe4b5)]" />
+          <div className="space-y-1">
+            <Link href="/" className="text-xl font-semibold">
+              {siteTitle}
+            </Link>
+            <p className="max-w-xl text-sm leading-6 text-[var(--muted)]">
+              Har bir o‘quvchi o‘z uslubida o‘rganadi.
+            </p>
+          </div>
         </div>
 
         <div className="flex flex-col gap-3 lg:items-end">
-          <nav className="flex flex-wrap items-center gap-3">
-            <Link href="/" className="rounded-full px-3 py-2 text-sm font-medium hover:bg-white/60">
+          <nav className="flex flex-wrap items-center gap-2 text-sm font-medium">
+            <Link href="/" className="rounded-full px-3 py-2 hover:bg-white/70">
               Bosh sahifa
+            </Link>
+            <Link href="/courses" className="rounded-full px-3 py-2 hover:bg-white/70">
+              Darslar
+            </Link>
+            <Link href="/help" className="rounded-full px-3 py-2 hover:bg-white/70">
+              Yordam
             </Link>
             {currentUser ? (
               <>
                 <Link
-                  href="/dashboard"
-                  className="rounded-full px-3 py-2 text-sm font-medium hover:bg-white/60"
+                  href={dashboardPaths[currentUser.role]}
+                  className="rounded-full px-3 py-2 hover:bg-white/70"
                 >
                   Dashboard
                 </Link>
+                <Link href="/reports" className="rounded-full px-3 py-2 hover:bg-white/70">
+                  Hisobot
+                </Link>
                 <Link
-                  href="/reports"
-                  className="rounded-full px-3 py-2 text-sm font-medium hover:bg-white/60"
+                  href="/settings/accessibility"
+                  className="rounded-full px-3 py-2 hover:bg-white/70"
                 >
-                  Hisobotlar
+                  Sozlamalar
                 </Link>
               </>
             ) : (
               <>
-                <Link
-                  href="/login"
-                  className="rounded-full px-3 py-2 text-sm font-medium hover:bg-white/60"
-                >
+                <Link href="/login" className="rounded-full px-3 py-2 hover:bg-white/70">
                   Kirish
                 </Link>
-                <Link
-                  href="/register"
-                  className="rounded-full px-3 py-2 text-sm font-medium hover:bg-white/60"
-                >
+                <Link href="/register" className="rounded-full px-3 py-2 hover:bg-white/70">
                   Ro‘yxatdan o‘tish
                 </Link>
               </>
             )}
           </nav>
 
-          <div className="flex flex-col gap-3 lg:items-end">
-            <AccessibilityPanel />
-            {currentUser ? (
-              <div className="flex flex-wrap items-center gap-3">
-                <span className="rounded-full bg-white/70 px-4 py-2 text-sm">
-                  {currentUser.name} • {roleLabels[currentUser.role]}
-                </span>
-                <form action={logoutAction}>
-                  <Button variant="ghost" type="submit">
-                    Chiqish
-                  </Button>
-                </form>
-              </div>
-            ) : null}
-          </div>
+          {currentUser ? (
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="rounded-full border border-[var(--border)] bg-white/80 px-4 py-2 text-sm">
+                {currentUser.name} • {roleLabels[currentUser.role]}
+              </span>
+              <form action={logoutAction}>
+                <Button variant="secondary" type="submit">
+                  Chiqish
+                </Button>
+              </form>
+            </div>
+          ) : null}
         </div>
       </div>
     </header>

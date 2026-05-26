@@ -1,114 +1,98 @@
 import Link from "next/link";
 
-import { Card } from "@/components/ui/card";
-import { EmptyState } from "@/components/ui/empty-state";
+import { ParentAdviceCard } from "@/components/dashboard/parent-advice-card";
+import { HumanEmptyState } from "@/components/shared/human-empty-state";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import { StatCard } from "@/components/ui/stat-card";
 import { StatusBadge } from "@/components/ui/status-badge";
-import { getParentDashboardData } from "@/lib/data";
-import { formatDate } from "@/lib/utils";
-
-type ParentDashboardData = Awaited<ReturnType<typeof getParentDashboardData>>;
+import { average, formatDate } from "@/lib/utils";
+import type { ParentDashboardData } from "@/types";
 
 export function ParentDashboard({ data }: { data: ParentDashboardData }) {
-  if (!data.child || !data.stats) {
+  if (!data.child) {
     return (
-      <EmptyState
-        title="Farzand bilan bog‘lanish topilmadi"
-        description="Ro‘yxatdan o‘tishda farzand emailini kiriting yoki admin orqali bog‘lashni amalga oshiring."
+      <HumanEmptyState
+        title="Farzand bilan bog‘lanish hali ko‘rinmadi"
+        description="Farzand emaili orqali bog‘langach, bu yerda tinch kuzatuv hisobotlari ko‘rinadi."
       />
     );
   }
 
-  const totalLessons = data.child.progressEntries.length || 1;
+  const completed = data.child.progressEntries.filter((entry) => entry.completed).length;
 
   return (
     <div className="space-y-8">
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <StatCard
-          label="Farzand"
-          value={data.child.name}
-          description="Kuzatuv olib borilayotgan o‘quvchi."
+          label="Bugungi faollik"
+          value={formatDate(data.child.progressEntries[0]?.lastOpenedAt)}
+          description="Oxirgi kirish yoki mashq shu yerda ko‘rinadi."
         />
         <StatCard
           label="Tugallangan darslar"
-          value={data.stats.completedLessons}
-          description="Farzandingiz yakunlagan darslar soni."
+          value={completed}
+          description="Har bir dars kichik qadam sifatida hisoblanadi."
+        />
+        <StatCard
+          label="Kayfiyat"
+          value={data.child.progressEntries[0]?.emotionalState ?? "Hali belgilanmagan"}
+          description="Bu baho emas, ritmni tushunishga yordam beradi."
         />
         <StatCard
           label="O‘rtacha natija"
-          value={`${data.stats.averageScore}%`}
-          description="Quiz natijalari bo‘yicha umumiy o‘rtacha."
-        />
-        <StatCard
-          label="Oxirgi faollik"
-          value={formatDate(data.stats.recentActivity)}
-          description="So‘nggi kirish yoki test vaqti."
+          value={`${average(data.child.quizAttempts.map((attempt) => attempt.score))}%`}
+          description="Foizdan ko‘ra, qaysi format yengilroq bo‘lganiga ko‘proq qaraymiz."
         />
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
-        <Card className="space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-3">
+      <section className="grid gap-6 xl:grid-cols-[1fr_1fr]">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between gap-4">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-muted">
-                Qisqa hisobot
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+                Farzandingiz qanday o‘rganayotganini sokin kuzating
               </p>
-              <h3 className="text-2xl font-semibold">Farzand rivojlanishi</h3>
+              <h2 className="text-3xl font-semibold">{data.child.name}</h2>
             </div>
-            <Link href="/reports" className="text-sm font-semibold text-accent">
+            <Link href="/reports" className="text-sm font-semibold text-[var(--accent)]">
               To‘liq hisobot
             </Link>
           </div>
-
-          <ProgressBar
-            value={Math.round((data.stats.completedLessons / totalLessons) * 100)}
-            label="Darslarni tugallash ko‘rsatkichi"
-          />
-
-          <p className="rounded-2xl border border-border bg-white/80 p-4 text-sm leading-7 text-muted">
-            {data.stats.reportSummary}
-          </p>
-
-          <div className="space-y-3">
-            {data.child.progressEntries.slice(0, 5).map((progress) => (
-              <div key={progress.id} className="rounded-2xl border border-border p-4">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <p className="font-semibold">{progress.lesson.title}</p>
-                    <p className="text-xs text-muted">{progress.lesson.course.title}</p>
+          <div className="rounded-[2rem] border border-[var(--border)] bg-[var(--surface)] p-5">
+            <ProgressBar
+              value={Math.round((completed / Math.max(data.child.progressEntries.length, 1)) * 100)}
+              label="Rivojlanish xaritasi"
+              hint="Bu natija baho emas, keyingi qadamni tanlash uchun yordam."
+            />
+            <div className="mt-5 grid gap-3">
+              {data.child.progressEntries.slice(0, 4).map((entry) => (
+                <div key={entry.id} className="rounded-[1.5rem] bg-white/80 px-4 py-4">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <p className="font-semibold">{entry.lesson.title}</p>
+                      <p className="text-sm leading-6 text-[var(--muted)]">{entry.teacherComment || "Izoh keyinroq qo‘shiladi."}</p>
+                    </div>
+                    <StatusBadge tone={entry.completed ? "success" : "warning"}>
+                      {entry.completed ? "Yakunlandi" : "Jarayonda"}
+                    </StatusBadge>
                   </div>
-                  <StatusBadge tone={progress.completed ? "success" : "warning"}>
-                    {progress.completed ? "Tugallangan" : "Davom etmoqda"}
-                  </StatusBadge>
                 </div>
-                <p className="mt-2 text-xs text-muted">Oxirgi faollik: {formatDate(progress.lastOpenedAt)}</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </Card>
+        </div>
 
-        <Card className="space-y-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-muted">
-            So‘nggi testlar
-          </p>
-          <h3 className="text-2xl font-semibold">Natijalar va qo‘llab-quvvatlash</h3>
-          <div className="space-y-3">
-            {data.child.quizAttempts.slice(0, 6).map((attempt) => (
-              <div key={attempt.id} className="rounded-2xl border border-border p-4">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <p className="font-semibold">{attempt.quiz.lesson.title}</p>
-                    <p className="text-xs text-muted">{formatDate(attempt.createdAt)}</p>
-                  </div>
-                  <StatusBadge tone={attempt.score >= 70 ? "success" : "warning"}>
-                    {attempt.score}%
-                  </StatusBadge>
-                </div>
-              </div>
-            ))}
+        <div className="space-y-4">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+              Uyda yordam berish uchun 3 ta oddiy tavsiya
+            </p>
+            <h2 className="text-3xl font-semibold">Yordam ohangida</h2>
           </div>
-        </Card>
+          {data.advice.map((item) => (
+            <ParentAdviceCard key={item} text={item} />
+          ))}
+        </div>
       </section>
     </div>
   );
